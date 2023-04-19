@@ -84,23 +84,16 @@ while not done:
                 "proper budget: Shows a personalized budget based on the 50/30/20 rule\n"
                 )
     elif (inp.lower() == 'add expense'):
-        x = ["Types of expenses:\n",
-                "1 : rent/mortgage\n",
-                "2 : insurance\n",
-                "3 : car\n",
-                "4 : food\n",
-                "5 : bills\n",                                                                              
-                "6 : activities\n",
-                "7 : other\n",
-        ]
-        print(' '.join(str(el) for el in x))
+        q = session.query(Category).all()
+        [print(f"{x.id}: {x.name}") for x in q]
         cat = input('Input Category> ')
         mon = input('Input amount for expenses> ')
-        da_name = [y for y in x if y[0] == cat][0].split(':')[1][1: -1]
-
+        
+        da_name = session.query(Category.name).filter(Category.id == cat).scalar_subquery()
         new_ex = Expense(name = da_name, amount= mon, user_id=new_user.id, category_id= cat)
         session.add(new_ex)
         session.commit()
+        print("Successfully added expense!")
     elif inp.lower() == 'income':
         print(f"Your income: ${new_user.income}")
     elif inp.lower() == 'expenses':
@@ -115,6 +108,7 @@ while not done:
         expense_to_delete = session.query(Expense).filter(Expense.id == dog).one()
         session.delete(expense_to_delete)
         session.commit()
+        print("Successfully deleted expense!")
     elif inp.lower() == 'savings':
         print("Based on your expenses, you are saving: ")
         total_expenses = session.query(Expense.amount).filter(Expense.user_id == new_user.id).all()
@@ -122,7 +116,10 @@ while not done:
         for t in total_expenses: 
             total += float(str(t)[1:-2])
         # [total += float(str(t)[1:-2]) for t in total_expenses]
-        print(new_user.income - total)
+        print(f"${new_user.income - total}")
+        if (new_user.income - total <= 0):
+            print("Bro you have to be kidding me, you broke idiot. You literally have no money you're going to go broke...")
+            print("I can't believe we have taught you nothing")
     elif inp.lower() == 'proper budget':
         needs = new_user.income * .5
         wants = new_user.income * .3
