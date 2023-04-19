@@ -1,12 +1,10 @@
-from sqlalchemy import Column, String, Integer, Float, ForeignKey, MetaData
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, create_engine
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.associationproxy import association_proxy
 
-convention = {
-    "fk": "fk_%(tablename)s%(column_0name)s%(referred_table_name)s",
-}
-metadata = MetaData(naming_convention=convention)
-Base = declarative_base(metadata=metadata)
+engine = create_engine("sqlite:///database.db")
+Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
@@ -14,7 +12,9 @@ class User(Base):
     username = Column(String())
     password = Column(String())
     income = Column(Float())
-    #expense_id = Column(Integer(), ForeignKey("expenses.id")) ##PROBLEM LINE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    expenses = relationship('Expense', back_populates='user')
+    categories = association_proxy('expenses', 'category',
+        creator=lambda c: Expense(category=c))
 
     def __repr__(self):
         return f"Username: {self.username}, ID: {self.id}, Income: ${self.income}"
@@ -25,18 +25,23 @@ class Expense(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(String())
     amount = Column(Float())
+    user_id = Column(Integer(), ForeignKey("users.id"))
+    category_id = Column(Integer(), ForeignKey("categories.id"))
 
-    users = relationship("User", backref=backref("expense"))
-    category = relationship('Category', backref=backref('expense'))
+    user = relationship('User', back_populates='expenses')
+    category = relationship('Category', back_populates='expenses')
 
     def __repr__(self):
         return f"Name: {self.name}, ${self.amount}"
 
 class Category(Base):
     __tablename__ = 'categories'
-    id = Column('id', Integer, primary_key = True) 
-    name = Column('name', String)
-    expense = relationship('Expense', backref=backref('category'))
+    id = Column(Integer(), primary_key = True) 
+    name = Column(String())
+    expenses = relationship('Expense', back_populates='category')
+
+    users = association_proxy('expenses', 'user',
+        creator=lambda u: Expense(user=u))
     
     def __repr__(self):
         return f"Name: {self.name}, ID: {self.id}"
