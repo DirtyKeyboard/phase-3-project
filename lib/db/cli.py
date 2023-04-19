@@ -80,8 +80,8 @@ while not done:
                 "expenses: View all of your expenses\n"
                 "add expense: Add an expense\n"
                 "remove expense: Deletes an existing expense\n"
-                "savings: Shows money saved based on multiple percentages\n"
-                "save exact: Calculate an exact percentage of money saved\n"
+                "savings: Shows money saved based on expenses\n"
+                "proper budget: Shows a personalized budget based on the 50/30/20 rule\n"
                 )
     elif (inp.lower() == 'add expense'):
         x = ["Types of expenses:\n",
@@ -108,12 +108,28 @@ while not done:
         ret = session.query(Expense).filter(Expense.user_id == new_user.id)
         [print(a) for a in ret]
     elif inp.lower() == 'remove expense':
-        pass
+        print("Which expense would you like to remove? ")
+        ret = session.query(Expense).filter(Expense.user_id == new_user.id)
+        [print(f"{a.id}: {a}") for a in ret]
+        dog = input("Expense ID > ")
+        expense_to_delete = session.query(Expense).filter(Expense.id == dog).one()
+        session.delete(expense_to_delete)
+        session.commit()
     elif inp.lower() == 'savings':
-        pass
-    elif inp.lower() == 'save exact':
-        pass
+        print("Based on your expenses, you are saving: ")
+        total_expenses = session.query(Expense.amount).filter(Expense.user_id == new_user.id).all()
+        total = 0
+        for t in total_expenses: 
+            total += float(str(t)[1:-2])
+        # [total += float(str(t)[1:-2]) for t in total_expenses]
+        print(new_user.income - total)
     elif inp.lower() == 'proper budget':
-        pass
+        needs = new_user.income * .5
+        wants = new_user.income * .3
+        savings = new_user.income * .2
+        print(f"Needs: ${needs}\n" 
+            f"Wants: ${wants}\n"
+            f"Savings: ${savings}\n"
+        )
     else:
         print('Invalid command.')
