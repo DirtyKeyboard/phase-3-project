@@ -88,7 +88,6 @@ while not done:
         [print(f"{x.id}: {x.name}") for x in q]
         cat = input('Input Category> ')
         mon = input('Input amount for expenses> ')
-        
         da_name = session.query(Category.name).filter(Category.id == cat).scalar_subquery()
         new_ex = Expense(name = da_name, amount= mon, user_id=new_user.id, category_id= cat)
         session.add(new_ex)
@@ -120,6 +119,25 @@ while not done:
         if (new_user.income - total <= 0):
             print("Bro you have to be kidding me, you broke idiot. You literally have no money you're going to go broke...")
             print("I can't believe we have taught you nothing")
+        elif (new_user.income - total == 420):
+            print("""
+            Eyyyyyyyyyyyyyyyyyyy
+            a,  8a
+            `8, `8)                            ,adPPRg,
+            8)  ]8                        ,ad888888888b
+            ,8' ,8'                    ,gPPR888888888888
+            ,8' ,8'                 ,ad8""   `Y888888888P
+            8)  8)              ,ad8""        (8888888""
+            8,  8,          ,ad8""            d888""
+            `8, `8,     ,ad8""            ,ad8""
+            `8, `" ,ad8""            ,ad8""
+                ,gPPR8b           ,ad8""
+            dP:::::Yb      ,ad8""
+            8):::::(8  ,ad8""
+            Yb:;;;:d888""  
+                "8ggg8P"     
+                        
+            """)
     elif inp.lower() == 'proper budget':
         needs = new_user.income * .5
         wants = new_user.income * .3
