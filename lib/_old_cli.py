@@ -4,7 +4,7 @@ from getpass import getpass
 from db.models import User
 
 Base = declarative_base()
-engine = create_engine("sqlite:///database.db")
+engine = create_engine("sqlite:///db/database.db")
 Base.metadata.create_all(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
