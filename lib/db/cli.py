@@ -101,7 +101,19 @@ while not done:
         new_ex = Expense(name = da_name, amount= mon, user_id=new_user.id, category_id= cat)
         session.add(new_ex)
         session.commit()
-
+    elif inp.lower() == 'income':
+        print(f"Your income: ${new_user.income}")
+    elif inp.lower() == 'expenses':
+        print("Here is a list of your expenses: ")
+        ret = session.query(Expense).filter(Expense.user_id == new_user.id)
+        [print(a) for a in ret]
+    elif inp.lower() == 'remove expense':
+        pass
+    elif inp.lower() == 'savings':
+        pass
+    elif inp.lower() == 'save exact':
+        pass
+    elif inp.lower() == 'proper budget':
+        pass
     else:
         print('Invalid command.')
-    
