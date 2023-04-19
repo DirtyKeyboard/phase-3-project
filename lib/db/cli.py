@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from getpass import getpass
-from models import User
+from models import User, Expense, Category
 
 Base = declarative_base()
 engine = create_engine("sqlite:///database.db")
@@ -67,9 +67,9 @@ while not done:
     cur = new_user.id
     inp = input("> ")
     inp = inp.lower()
-    if (inp == 'exit'):
+    if (inp.lower() == 'exit'):
         done = True
-    elif (inp == 'whoami'):
+    elif (inp.lower() == 'whoami'):
         e = session.query(User).filter(User.id == cur).one()
         print(e)
     elif (inp == 'help'):
@@ -83,3 +83,25 @@ while not done:
                 "savings: Shows money saved based on multiple percentages\n"
                 "save exact: Calculate an exact percentage of money saved\n"
                 )
+    elif (inp.lower() == 'add expense'):
+        x = ["Types of expenses:\n",
+                "1 : rent/mortgage\n",
+                "2 : insurance\n",
+                "3 : car\n",
+                "4 : food\n",
+                "5 : bills\n",                                                                              
+                "6 : activities\n",
+                "7 : other\n",
+        ]
+        print(' '.join(str(el) for el in x))
+        cat = input('Input Category> ')
+        mon = input('Input amount for expenses> ')
+        da_name = [y for y in x if y[0] == cat][0].split(':')[1][1: -1]
+
+        new_ex = Expense(name = da_name, amount= mon, user_id=new_user.id, category_id= cat)
+        session.add(new_ex)
+        session.commit()
+
+    else:
+        print('Invalid command.')
+    
