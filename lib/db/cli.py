@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from getpass import getpass
-from db.models import User
+from models import User
 
 Base = declarative_base()
-engine = create_engine("sqlite:///db/database.db")
+engine = create_engine("sqlite:///database.db")
 Base.metadata.create_all(bind=engine)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -31,7 +31,9 @@ while not logged:
                     current = session.query(User).filter(User.username == usr).one()
                     print("Someone with this username already exists.")
                 except:
-                    new_user = User(usr, pswd)
+                    inp = input("Enter your monthly income: $")
+
+                    new_user = User(username=usr, password=pswd, income = inp)
                     session.add(new_user)
                     session.commit()
                     pass_matching = True
@@ -72,13 +74,12 @@ while not done:
         print(e)
     elif (inp == 'help'):
         print("List of commands:\n"
-                "NOTE: All expenses/income is on a monthly basis"
+                "NOTE: All expenses/income is on a monthly basis\n"
+                "exit: exit the program\n"
                 "income: View your income\n"
-                "set income: Set your income\n"
                 "expenses: View all of your expenses\n"
                 "add expense: Add an expense\n"
-                "edit expense: Edit an existing expense\n"
                 "remove expense: Deletes an existing expense\n"
                 "savings: Shows money saved based on multiple percentages\n"
-                "save exact: Calculate an exact percentage of money saved"
+                "save exact: Calculate an exact percentage of money saved\n"
                 )
