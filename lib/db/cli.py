@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from getpass import getpass
 from models import User, Expense, Category
+from fpdf import FPDF
 
 Base = declarative_base()
 engine = create_engine("sqlite:///database.db")
@@ -148,7 +149,7 @@ while not done:
             f"Wants: ${wants}\n"
             f"Savings: ${savings}\n"
         )
-    elif inp.lower() == 'view budget':
+    elif inp.lower() == 'save budget':
         total_expenses = session.query(Expense.amount).filter(Expense.user_id == new_user.id).all()
         total = 0
         for t in total_expenses: 
@@ -156,13 +157,24 @@ while not done:
         inc = new_user.income
         expense_name = session.query(Expense.name).filter(Expense.user_id == new_user.id)
         expense_amount = session.query(Expense.amount).filter(Expense.user_id == new_user.id)
-        print(f"Income: ${inc}/mo")
-        print("+----Expenses----+")
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 15)
+        pdf.cell(200, 10, txt = f"Income: ${inc}/mo", ln = 1, align = 'C')
+        pdf.cell(200, 10, txt = "+--------------Expenses--------------+",
+                ln = 2, align = 'C')
         count = 0
+        lne = 3
         for el in expense_name:
-            print(f"{el}: ${expense_amount[count]}")
+            #print(f"{el[0].capitalize()}: ${expense_amount[count][0]}")
+            pdf.cell(200, 10, txt = f"{el[0].capitalize()}: ${expense_amount[count][0]}", ln = lne, align = 'C')
             count+=1
-        print("+----------------+")
-        print(f"Leftover monthly: ${inc - total}")
+            lne += 1
+        
+        pdf.cell(200, 10, txt = "+------------------------------------+", ln = lne, align = 'C')
+        lne += 1
+        pdf.cell(200, 10, txt = f"Leftover monthly: ${inc - total}", ln = lne, align = 'C')
+        pdf.output(f"budget_for_{new_user.username}.pdf")
+        print(f"Your budget has been saved to budget_for_{new_user.username}.pdf")
     else:
         print('Invalid command.')
