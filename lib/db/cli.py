@@ -82,6 +82,8 @@ while not done:
                 "remove expense: Deletes an existing expense\n"
                 "savings: Shows money saved based on expenses\n"
                 "proper budget: Shows a personalized budget based on the 50/30/20 rule\n"
+                "view budget: View all of your spending and your income\n"
+                ""
                 )
     elif (inp.lower() == 'add expense'):
         q = session.query(Category).all()
@@ -146,5 +148,21 @@ while not done:
             f"Wants: ${wants}\n"
             f"Savings: ${savings}\n"
         )
+    elif inp.lower() == 'view budget':
+        total_expenses = session.query(Expense.amount).filter(Expense.user_id == new_user.id).all()
+        total = 0
+        for t in total_expenses: 
+            total += float(str(t)[1:-2])
+        inc = new_user.income
+        expense_name = session.query(Expense.name).filter(Expense.user_id == new_user.id)
+        expense_amount = session.query(Expense.amount).filter(Expense.user_id == new_user.id)
+        print(f"Income: ${inc}/mo")
+        print("+----Expenses----+")
+        count = 0
+        for el in expense_name:
+            print(f"{el}: ${expense_amount[count]}")
+            count+=1
+        print("+----------------+")
+        print(f"Leftover monthly: ${inc - total}")
     else:
         print('Invalid command.')
