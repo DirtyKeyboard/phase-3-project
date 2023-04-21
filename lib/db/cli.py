@@ -83,7 +83,7 @@ while not done:
                 "remove expense: Deletes an existing expense\n"
                 "savings: Shows money saved based on expenses\n"
                 "proper budget: Shows a personalized budget based on the 50/30/20 rule\n"
-                "view budget: View all of your spending and your income\n"
+                "save budget: Saves your budget to a PDF file\n"
                 ""
                 )
     elif (inp.lower() == 'add expense'):
